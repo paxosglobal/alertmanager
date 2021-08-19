@@ -3,7 +3,7 @@ route:
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 1h
-  receiver: 'web.hook'
+  receiver: 'pd-alerts'
 receivers:
 - name: 'web.hook'
   webhook_configs:
