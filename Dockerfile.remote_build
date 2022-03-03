@@ -6,7 +6,7 @@ FROM golang:${GO_VERSION}
 #FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest
 LABEL maintainer="Paxos / SRE Team: Mike Nichols <mnichols@paxos.com>"
 
-ARG AM_BRANCH="v0.22.2-pdfile"
+ARG AM_BRANCH="v0.23.0-pdfile"
 ENV AM_BRANCH=${AM_BRANCH}
 ARG AM_SOURCE_REPO="github.com/mike2194/alertmanager"
 ENV AM_SOURCE_REPO=${AM_SOURCE_REPO}
