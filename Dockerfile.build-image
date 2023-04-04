@@ -1,0 +1,50 @@
+## run builder image
+ARG GO_VERSION="1.16-alpine"
+ARG ARCH="amd64"
+ARG OS="linux"
+FROM golang:${GO_VERSION}
+#FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest
+LABEL maintainer="Paxos / SRE Team: Mike Nichols <mnichols@paxos.com>"
+
+ARG AM_BRANCH="paxos/pd_service_key_from_file"
+ENV AM_BRANCH=${AM_BRANCH}
+ARG AM_SOURCE_REPO="github.com/paxosglobal/alertmanager"
+ENV AM_SOURCE_REPO=${AM_SOURCE_REPO}
+
+WORKDIR /go/src/${AM_SOURCE_REPO}
+
+
+RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache git
+#RUN go get github.com/golang/dep/cmd/dep
+
+# get source repo
+RUN git clone --recursive --branch ${AM_BRANCH} https://${AM_SOURCE_REPO} /go/src/${AM_SOURCE_REPO}
+
+# build `amtool`
+RUN go build ./cmd/amtool
+RUN install --owner=root --group=root --mode=0755 ./amtool /bin/
+
+# build `alertmanager`
+RUN go build ./cmd/alertmanager
+RUN install --owner=root --group=root --mode=0755 ./alertmanager /bin/
+
+# create alertmanager storage path
+RUN mkdir -p /alertmanager && \
+    chown -R nobody:nobody /alertmanager
+
+# create alertmanager config path
+RUN mkdir -p /etc/alertmanager && \
+    chown -R nobody:nobody /etc/alertmanager
+
+# cleanup source repo
+RUN rm -rf /go/src/${AM_SOURCE_REPO}
+
+
+USER       nobody
+EXPOSE     9093
+VOLUME     [ "/alertmanager" ]
+WORKDIR    /alertmanager
+ENTRYPOINT [ "/bin/alertmanager" ]
+CMD        [ "--config.file=/etc/alertmanager/alertmanager.yml", \
+             "--storage.path=/alertmanager" ]
