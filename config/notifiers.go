@@ -320,15 +320,6 @@ func (c *PagerdutyConfig) UnmarshalYAML(unmarshal func(interface{}) error) error
 	if err := unmarshal((*plain)(c)); err != nil {
 		return err
 	}
-
-	if len(c.RoutingKey) > 0 && len(c.RoutingKeyFile) > 0 {
-		return fmt.Errorf("at most one of routing_key & routing_key_file must be configured")
-	}
-
-	if len(c.ServiceKey) > 0 && len(c.ServiceKeyFile) > 0 {
-		return fmt.Errorf("at most one of service_key & service_key_file must be configured")
-	}
-
 	if c.RoutingKey == "" && c.ServiceKey == "" && c.RoutingKeyFile == "" && c.ServiceKeyFile == "" {
 		return fmt.Errorf("missing service or routing key in PagerDuty config")
 	}
