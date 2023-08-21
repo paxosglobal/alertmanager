@@ -1,5 +1,9 @@
+#---------------------------------------------------
+# Building This Image:  see "./README-PAXOS.md"
+#---------------------------------------------------
+
 ## run builder image
-ARG GO_VERSION="1.16-alpine"
+ARG GO_VERSION="1.18-alpine"
 ARG ARCH="amd64"
 ARG OS="linux"
 FROM golang:${GO_VERSION}
@@ -22,6 +26,7 @@ RUN apk add --no-cache git
 RUN git clone --recursive --branch ${AM_BRANCH} https://${AM_SOURCE_REPO} /go/src/${AM_SOURCE_REPO}
 
 # build `amtool`
+RUN go mod download
 RUN go build ./cmd/amtool
 RUN install --owner=root --group=root --mode=0755 ./amtool /bin/
 
