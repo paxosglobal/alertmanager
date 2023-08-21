@@ -19,6 +19,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+    "io/ioutil"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -44,22 +45,6 @@ func init() {
 		panic(err)
 	}
 	secretTokenJSON = string(b)
-}
-
-// ResolveFileConfig takes two values - a config value and a file path and resolves it to an absolute value
-// if the value is set, that gets returned, otherwise if the file path is set, we return the contents of the file
-// otherwise, we error
-func ResolveFileConfigSecret(configValue Secret, filePath string) (Secret, error) {
-	if configValue != "" || filePath == "" {
-		return configValue, nil
-	}
-
-	val, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return "", err
-	}
-
-	return Secret(val), nil
 }
 
 // ResolveFileConfigSecretURL takes two values - a config URL and a file path and resolves it to an absolute value

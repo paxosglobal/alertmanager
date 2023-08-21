@@ -169,13 +169,8 @@ func (n *Notifier) notifyV1(
 		serviceKey = strings.TrimSpace(string(content))
 	}
 
-	serviceKey, fileErr := config.ResolveFileConfigSecret(n.conf.ServiceKey, n.conf.ServiceKeyFile)
-	if fileErr != nil {
-		return false, errors.Wrap(fileErr, "failed to read service key from file")
-	}
-
 	msg := &pagerDutyMessage{
-		ServiceKey:  tmpl(string(serviceKey)),
+		ServiceKey:  tmpl(serviceKey),
 		EventType:   eventType,
 		IncidentKey: key.Hash(),
 		Description: description,
@@ -239,15 +234,10 @@ func (n *Notifier) notifyV2(
 		routingKey = strings.TrimSpace(string(content))
 	}
 
-	routingKey, fileErr := config.ResolveFileConfigSecret(n.conf.RoutingKey, n.conf.RoutingKeyFile)
-	if fileErr != nil {
-		return false, errors.Wrap(fileErr, "failed to read routing key from file")
-	}
-
 	msg := &pagerDutyMessage{
 		Client:      tmpl(n.conf.Client),
 		ClientURL:   tmpl(n.conf.ClientURL),
-		RoutingKey:  tmpl(string(routingKey)),
+		RoutingKey:  tmpl(routingKey),
 		EventAction: eventType,
 		DedupKey:    key.Hash(),
 		Images:      make([]pagerDutyImage, 0, len(n.conf.Images)),
