@@ -25,8 +25,11 @@ RUN apk add --no-cache git
 # get source repo
 RUN git clone --recursive --branch ${AM_BRANCH} https://${AM_SOURCE_REPO} /go/src/${AM_SOURCE_REPO}
 
-# build `amtool`
+# update go modules
+RUN go mod tidy
 RUN go mod download
+
+# build `amtool`
 RUN go build ./cmd/amtool
 RUN install --owner=root --group=root --mode=0755 ./amtool /bin/
 
